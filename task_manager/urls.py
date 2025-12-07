@@ -5,7 +5,8 @@ from django.http import JsonResponse, HttpResponseRedirect
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import re_path
-from django.views.static import serve
+from core.views import serve_media
+
 
 
 def healthz(_request):
@@ -34,7 +35,8 @@ if settings.DEBUG:
 # Serve user-uploaded media in production (temporary; move to S3 later)
 if not settings.DEBUG:
     urlpatterns += [
-        re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
+        re_path(r'^media/(?P<path>.+)$', serve_media, name='serve-media'),
     ]
+
 
 
