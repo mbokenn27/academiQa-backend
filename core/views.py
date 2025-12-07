@@ -27,6 +27,8 @@ from django.db.models import Q
 from django.http import FileResponse, Http404
 from django.conf import settings
 from pathlib import Path
+import mimetypes
+
 
 class IsAdmin(permissions.BasePermission):
     def has_permission(self, request, view):
@@ -895,7 +897,17 @@ def mark_task_chat_read(request, task_id):
 
 # --- MEDIA DOWNLOADS (prod-safe) ---
 def serve_media(request, path: str):
-    full_path = Path(settings.MEDIA_ROOT) / path
-    if not full_path.exists() or not full_path.is_file():
+    base = Path(settings.MEDIA_ROOT).resolve()
+    full_path = (base / path).resolve()
+
+    # Prevent path traversal and ensure the file exists
+    if not str(full_path).startswith(str(base)) or not full_path.is_file():
         raise Http404("Media file not found")
-    return FileResponse(open(full_path, "rb"))
+
+    content_type, _ = mimetypes.guess_type(str(full_path))
+    return FileResponse(open(full_path, "rb"),
+                        content_type=content_type or "application/octet-stream")
+    # If you want to force download instead of inline:
+    # return FileResponse(open(full_path, "rb"),
+    #                     as_attachment=True, filename=full_path.name,
+    #                     content_type=content_type or "application/octet-stream")
