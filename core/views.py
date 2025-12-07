@@ -23,6 +23,7 @@ from .serializers import (
     TaskFileSerializer, RevisionSerializer, BudgetProposalSerializer
 )
 from .tasks import notify_task_status_update, create_notification
+from django.db.models import Q
 
 class IsAdmin(permissions.BasePermission):
     def has_permission(self, request, view):
@@ -876,3 +877,15 @@ class AdminStatsView(AuthenticatedAPIView):
                 "rating": float(request.user.profile.rating) if request.user.profile.rating else 5.0,
             }
         })
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def mark_task_chat_read(request, task_id):
+    from .models import Task, ChatMessage  # adjust names if yours differ
+
+    task = get_object_or_404(Task, pk=task_id)
+    (ChatMessage.objects
+        .filter(task=task)
+        .filter(~Q(sender=request.user))
+        .update(is_read=True))
+    return Response(status=204)

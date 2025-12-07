@@ -41,6 +41,8 @@ urlpatterns = [
 
     # CHAT
     path('api/tasks/<int:task_id>/chat/', views.ChatMessageListCreate.as_view(), name='chat-messages'),
+    path('api/tasks/<int:task_id>/mark-read/', views.mark_task_chat_read, name='task-mark-read'),
+
 
     # NOTIFICATIONS
     path('api/notifications/', views.NotificationList.as_view(), name='notification-list'),
