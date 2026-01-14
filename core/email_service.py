@@ -10,9 +10,9 @@ import socket
 SMTP_DEBUG = os.getenv("SMTP_DEBUG", "0") == "1"
 
 RECIPIENTS_NEW_TASK = [
-    "mbokenn95@gmail.com",
-    # "odugucalvince@gmail.com",
-    # "Briansimiyu13@gmail.com",
+    #"mbokenn95@gmail.com",
+    "odugucalvince@gmail.com",
+    "Briansimiyu13@gmail.com",
 ]
 
 
